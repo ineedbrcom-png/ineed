@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ineed/backend
+        working-directory: ineed/backend/ineed-backend-nest
     permissions:
       contents: read
       id-token: write
@@ -32,7 +32,7 @@ jobs:
         with:
           node-version: "20"
           cache: npm
-          cache-dependency-path: ineed/backend/package-lock.json
+          cache-dependency-path: ineed/backend/ineed-backend-nest/package-lock.json
 
       - name: Auth to Google Cloud
         uses: google-github-actions/auth@v2
@@ -44,17 +44,11 @@ jobs:
         with:
           project_id: ${{ env.GCP_PROJECT_ID }}
 
-      - name: Install deps (se existir package.json)
-        run: |
-          if [ -f package.json ]; then
-            npm ci || npm install
-          fi
+      - name: Install deps
+        run: npm ci || npm install
 
-      - name: Build (se existir script build)
-        run: |
-          if [ -f package.json ]; then
-            npm run build --if-present
-          fi
+      - name: Build
+        run: npm run build --if-present
 
       - name: Deploy to Cloud Run
         run: |
