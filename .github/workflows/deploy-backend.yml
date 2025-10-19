@@ -6,6 +6,10 @@ on:
     paths:
       - 'ineed/backend/**'
       - '.github/workflows/deploy-backend.yml'
+  pull_request:
+    paths:
+      - 'ineed/backend/**'
+      - '.github/workflows/deploy-backend.yml'
 
 # Use VARIÁVEIS (não hardcode) + SECRETS
 env:
@@ -30,13 +34,11 @@ jobs:
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           export_default_credentials: true
 
-      # Opcional: se seu backend for Node e precisar de build (ts->js)
-      - name: Build (Node)
+      - name: Build backend
+        working-directory: ineed/backend/_legacy_nest
         run: |
-          if [ -f package.json ]; then
-            npm ci || npm install
-            npm run build --if-present
-          fi
+          npm ci
+          npm run build
 
       # Deploy por "source" (Cloud Build). Precisa Cloud Build API habilitada.
       - name: Deploy to Cloud Run
