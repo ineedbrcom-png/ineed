@@ -1,8 +1,21 @@
-node_modules/
-dist/
-.firebase/
-functions/lib/
-.env
-.env.*
-.DS_Store
-.vscode/
+# Ignora tudo por padrão (para não versionar sua HOME)
+*
+!.gitignore
+
+# Monorepo e workflows
+!ineed/
+!ineed/**
+!.github/
+!.github/**
+
+# Re-ignorar lixo dentro de ineed/**
+ineed/**/node_modules/
+ineed/**/dist/
+ineed/**/build/
+ineed/**/.env
+ineed/**/.env.*
+ineed/**/.DS_Store
+ineed/**/.vscode/
+ineed/**/coverage/
+ineed/**/.turbo/
+ineed/**/.cache/
