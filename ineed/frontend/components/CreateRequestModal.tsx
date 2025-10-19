@@ -4,7 +4,7 @@ import { checkRequestContent } from '../services/apiService';
 import type { Request, Location } from '../types';
 import { useAppContext } from '../context/AppContext';
 
-const GOOGLE_MAPS_API_KEY = 'AIzaSyCsnjI2bO4OorGwsGgBSsjW4rY_pLmuKB8';
+const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
 const getPrivacyOffsetLocation = (location: Location, radiusInMeters: number): Location => {
     const radiusInDegrees = radiusInMeters / 111320; // Rough conversion
