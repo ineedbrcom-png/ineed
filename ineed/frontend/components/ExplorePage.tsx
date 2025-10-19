@@ -4,7 +4,7 @@ import { CATEGORIES } from '../constants';
 import type { Request, Location, Category } from '../types';
 import ExploreRequestCard from './ExploreRequestCard';
 
-const GOOGLE_MAPS_API_KEY = 'AIzaSyCsnjI2bO4OorGwsGgBSsjW4rY_pLmuKB8';
+const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
 // Haversine formula to calculate distance
 const getDistance = (loc1: Location, loc2: Location) => {

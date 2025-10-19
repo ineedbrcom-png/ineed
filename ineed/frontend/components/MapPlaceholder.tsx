@@ -10,7 +10,7 @@ declare global {
 }
 
 // --- Google Map Configuration ---
-const GOOGLE_MAPS_API_KEY = 'AIzaSyCsnjI2bO4OorGwsGgBSsjW4rY_pLmuKB8';
+const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 const MAP_CENTER = { lat: -23.55052, lng: -46.633308 }; // São Paulo
 const MAP_ZOOM = 13;
 
