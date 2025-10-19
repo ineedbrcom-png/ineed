@@ -1,0 +1,4 @@
+<OAuthV2 async="false" continueOnError="false" enabled="true" name="verify-oauth-v2-access-token">
+   <DisplayName>Verify OAuth v2.0 Access Token</DisplayName>
+   <Operation>VerifyAccessToken</Operation>
+</OAuthV2>

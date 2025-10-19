@@ -1,0 +1,28 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Request {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  budget      Decimal?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  userId      String
+  categoryId  String?
+  type        String?
+
+  lat         Float
+  lng         Float
+
+  /// Coluna gerada no Postgres; apenas leitura pelo Prisma
+  location    Unsupported("geography(Point,4326)")?
+
+  @@map("Request")
+}

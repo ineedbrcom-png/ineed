@@ -1,0 +1,7 @@
+{
+  "name": "iNeed - Conectando Necessidades",
+  "description": "iNeed é uma plataforma que conecta quem precisa de um produto ou serviço a quem pode oferecer, usando geolocalização para facilitar a vida na sua comunidade.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}

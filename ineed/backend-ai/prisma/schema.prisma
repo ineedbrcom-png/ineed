@@ -1,0 +1,43 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Modelos iniciais (simples). A geometria entra via SQL bruto/migration.
+model User {
+  id              String   @id @default(uuid())
+  name            String
+  email           String   @unique
+  username        String   @unique
+  passwordHash    String
+  avatarUrl       String?
+  bio             String?
+  isPremium       Boolean  @default(false)
+  avgRating       Decimal  @default(0)
+  ratingCount     Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relacionamentos futuros...
+}
+
+model Request {
+  id          String   @id @default(uuid())
+  userId      String
+  title       String
+  description String
+  categoryId  String
+  type        String   // 'service' | 'product' (podemos trocar por enum Prisma depois)
+  budget      Decimal?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // location: geometry(Point, 4326) — gerimos por coluna “raw” adicionada via migration SQL.
+
+  @@index([isActive])
+}

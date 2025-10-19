@@ -1,0 +1,48 @@
+name: Deploy Backend to Cloud Run
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'ineed/backend/**'
+      - '.github/workflows/deploy-backend.yml'
+
+# Use VARIÁVEIS (não hardcode) + SECRETS
+env:
+  GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
+  GCP_REGION: ${{ vars.GCP_REGION }}
+  SERVICE_NAME: ${{ vars.SERVICE_NAME }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ineed/backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+
+      # Opcional: se seu backend for Node e precisar de build (ts->js)
+      - name: Build (Node)
+        run: |
+          if [ -f package.json ]; then
+            npm ci || npm install
+            npm run build --if-present
+          fi
+
+      # Deploy por "source" (Cloud Build). Precisa Cloud Build API habilitada.
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy "$SERVICE_NAME" \
+            --region "$GCP_REGION" \
+            --source . \
+            --allow-unauthenticated \
+            --set-env-vars "DATABASE_URL=${{ secrets.DATABASE_URL }}"
