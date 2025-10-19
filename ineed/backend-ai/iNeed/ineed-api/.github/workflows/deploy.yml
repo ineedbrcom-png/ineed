@@ -1,0 +1,42 @@
+name: Deploy to Cloud Run
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Auth to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Deploy to Cloud Run (buildpacks)
+        env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+          GCP_REGION: ${{ secrets.GCP_REGION }}
+          SERVICE_NAME: ${{ secrets.SERVICE_NAME }}
+        run: |
+          gcloud config set project "$GCP_PROJECT_ID"
+          gcloud run deploy "$SERVICE_NAME" \
+            --region="$GCP_REGION" \
+            --source="." \
+            --allow-unauthenticated \
+            --cpu=1 \
+            --memory=512Mi \
+            --timeout=300 \
+            --max-instances=3 \
+            --platform=managed

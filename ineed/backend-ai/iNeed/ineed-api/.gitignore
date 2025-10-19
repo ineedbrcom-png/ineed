@@ -1,0 +1,26 @@
+# Node / NestJS
+node_modules/
+dist/
+build/
+.env
+.env.*
+*.log
+
+# Prisma
+prisma/*.db
+prisma/*.sqlite
+prisma/migrations/*/steps.json
+
+# Firebase / Cloud
+.firebase/
+firebase-debug.log
+serviceAccount*.json
+
+# IDE / Sistema
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Prisma Client (build artifacts)
+/generated/

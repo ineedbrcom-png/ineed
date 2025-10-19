@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model Request {
+  id          String                    @id
+  title       String
+  description String?
+  budget      Decimal?                  @db.Decimal
+  isActive    Boolean                   @default(true)
+  createdAt   DateTime                  @default(now())
+  userId      String
+  categoryId  String?
+  type        String?
+  lat         Float
+  lng         Float
+  location    Unsupported("geography")? @default(dbgenerated("(st_setsrid(st_makepoint(lng, lat), 4326))::geography"))
+
+  @@index([location], map: "Request_location_gist", type: Gist)
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model spatial_ref_sys {
+  srid      Int     @id
+  auth_name String? @db.VarChar(256)
+  auth_srid Int?
+  srtext    String? @db.VarChar(2048)
+  proj4text String? @db.VarChar(2048)
+}
