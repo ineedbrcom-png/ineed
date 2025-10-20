@@ -9,19 +9,16 @@ on:
   workflow_dispatch:
 
 env:
-  # Configure em Settings > Secrets and variables > Actions > Variables
   GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
   GCP_REGION: ${{ vars.GCP_REGION }}
   SERVICE_NAME: ${{ vars.SERVICE_NAME }}
 
 jobs:
   deploy:
-    # Só executa se a pasta do backend existir
-    if: ${{ hashFiles('ineed/backend/**') != '' }}
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ineed/backend
+        working-directory: ineed/backend/ineed-backend-nest
     permissions:
       contents: read
       id-token: write
@@ -35,7 +32,7 @@ jobs:
         with:
           node-version: "20"
           cache: npm
-          cache-dependency-path: ineed/backend/package-lock.json
+          cache-dependency-path: ineed/backend/ineed-backend-nest/package-lock.json
 
       - name: Auth to Google Cloud
         uses: google-github-actions/auth@v2
@@ -47,90 +44,12 @@ jobs:
         with:
           project_id: ${{ env.GCP_PROJECT_ID }}
 
-      - name: Install deps (se existir package.json)
-        run: |
-          if [ -f package.json ]; then
-            npm ci || npm install
-          fi
+      - name: Install deps
+        run: npm ci || npm install
 
-      - name: Build (se existir script build)
-        run: |
-          if [ -f package.json ]; then
-            npm run build --if-present
-          fi
+      - name: Build
+        run: npm run build --if-present
 
-      # Deploy direto do código (Cloud Build + Buildpacks)
-      - name: Deploy to Cloud Run
-        run: |
-          gcloud run deploy "$SERVICE_NAME" \
-            --project "$GCP_PROJECT_ID" \
-            --region "$GCP_REGION" \
-            --source . \
-            --allow-unauthenticated
-
-
-name: Deploy Backend to Cloud Run
-
-on:
-  push:
-    branches: [ main ]
-    paths:
-      - "ineed/backend/**"
-      - ".github/workflows/deploy-backend.yml"
-  workflow_dispatch:
-
-env:
-  # Configure em Settings > Secrets and variables > Actions > Variables
-  GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
-  GCP_REGION: ${{ vars.GCP_REGION }}
-  SERVICE_NAME: ${{ vars.SERVICE_NAME }}
-
-jobs:
-  deploy:
-    # Só executa se a pasta do backend existir
-    if: ${{ hashFiles('ineed/backend/**') != '' }}
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ineed/backend
-    permissions:
-      contents: read
-      id-token: write
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: npm
-          cache-dependency-path: ineed/backend/package-lock.json
-
-      - name: Auth to Google Cloud
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
-
-      - name: Setup gcloud
-        uses: google-github-actions/setup-gcloud@v2
-        with:
-          project_id: ${{ env.GCP_PROJECT_ID }}
-
-      - name: Install deps (se existir package.json)
-        run: |
-          if [ -f package.json ]; then
-            npm ci || npm install
-          fi
-
-      - name: Build (se existir script build)
-        run: |
-          if [ -f package.json ]; then
-            npm run build --if-present
-          fi
-
-      # Deploy direto do código (Cloud Build + Buildpacks)
       - name: Deploy to Cloud Run
         run: |
           gcloud run deploy "$SERVICE_NAME" \
